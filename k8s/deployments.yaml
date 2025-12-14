@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coord-node1
+  labels:
+    app: coordination
+    instance: node1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coordination
+      instance: node1
+  template:
+    metadata:
+      labels:
+        app: coordination
+        instance: node1
+    spec:
+      containers:
+        - name: coordination
+          image: coordination-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: coordination-shared-config
+          env:
+            - name: SERVER_ID
+              value: server-1
+            - name: SERVER_PORT
+              value: "8000"
+            - name: PEER_URLS
+              value: http://coord-node2:8000,http://coord-node3:8000
+            - name: TOKEN_SUCCESSOR
+              value: http://coord-node2:8000
+            - name: TOKEN_PREDECESSOR
+              value: http://coord-node3:8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coord-node2
+  labels:
+    app: coordination
+    instance: node2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coordination
+      instance: node2
+  template:
+    metadata:
+      labels:
+        app: coordination
+        instance: node2
+    spec:
+      containers:
+        - name: coordination
+          image: coordination-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: coordination-shared-config
+          env:
+            - name: SERVER_ID
+              value: server-2
+            - name: SERVER_PORT
+              value: "8000"
+            - name: PEER_URLS
+              value: http://coord-node1:8000,http://coord-node3:8000
+            - name: TOKEN_SUCCESSOR
+              value: http://coord-node3:8000
+            - name: TOKEN_PREDECESSOR
+              value: http://coord-node1:8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coord-node3
+  labels:
+    app: coordination
+    instance: node3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coordination
+      instance: node3
+  template:
+    metadata:
+      labels:
+        app: coordination
+        instance: node3
+    spec:
+      containers:
+        - name: coordination
+          image: coordination-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: coordination-shared-config
+          env:
+            - name: SERVER_ID
+              value: server-3
+            - name: SERVER_PORT
+              value: "8000"
+            - name: PEER_URLS
+              value: http://coord-node1:8000,http://coord-node2:8000
+            - name: TOKEN_SUCCESSOR
+              value: http://coord-node1:8000
+            - name: TOKEN_PREDECESSOR
+              value: http://coord-node2:8000

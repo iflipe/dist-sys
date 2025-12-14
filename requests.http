@@ -1,0 +1,51 @@
+http://0.0.0.0:8000/health
+###
+http://0.0.0.0:8001/status
+###
+http://0.0.0.0:8002/status
+
+###
+POST http://0.0.0.0:8000/multicast/messages HTTP/1.1
+Content-Type: application/json
+
+{
+    "content": "Mensagem 1!"
+}
+###
+POST http://0.0.0.0:8001/multicast/messages HTTP/1.1
+Content-Type: application/json
+
+{
+    "content": "Mensagem 2!"
+}
+###
+POST http://0.0.0.0:8002/multicast/messages HTTP/1.1
+Content-Type: application/json
+
+{
+    "content": "Terceira messagem!"
+}
+
+###
+POST http://0.0.0.0:8000/token/request HTTP/1.1
+Content-Type: application/json
+
+{
+    "payload": "Requesting token to server 1"
+}
+
+
+###
+POST http://0.0.0.0:8001/token/request HTTP/1.1
+Content-Type: application/json
+
+{
+    "payload": "Requesting token to server 2"
+}
+###
+POST http://0.0.0.0:8000/ring/token/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "sender_id": "server-1"
+}

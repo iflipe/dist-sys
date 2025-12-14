@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  node1:
+    build: .
+    container_name: coord-node1
+    environment:
+      SERVER_ID: server-1
+      SERVER_PORT: 8000
+      PEER_URLS: http://node2:8001,http://node3:8002
+      TOKEN_SUCCESSOR: http://node2:8001
+      TOKEN_PREDECESSOR: http://node3:8002
+      TOTAL_SERVERS: 3
+      INITIAL_LEADER_ID: server-1
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  node2:
+    build: .
+    container_name: coord-node2
+    environment:
+      SERVER_ID: server-2
+      SERVER_PORT: 8001
+      PEER_URLS: http://node1:8000,http://node3:8002
+      TOKEN_SUCCESSOR: http://node3:8002
+      TOKEN_PREDECESSOR: http://node1:8000
+      TOTAL_SERVERS: 3
+      INITIAL_LEADER_ID: server-1
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+  node3:
+    build: .
+    container_name: coord-node3
+    environment:
+      SERVER_ID: server-3
+      SERVER_PORT: 8002
+      PEER_URLS: http://node1:8000,http://node2:8001
+      TOKEN_SUCCESSOR: http://node1:8000
+      TOKEN_PREDECESSOR: http://node2:8001
+      TOTAL_SERVERS: 3
+      INITIAL_LEADER_ID: server-1
+    ports:
+      - "8002:8002"
+    restart: unless-stopped

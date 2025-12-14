@@ -1,0 +1,89 @@
+# Bully algorithm manual walkthrough
+# Follow the numbered sections in order; use `###` to send each request separately.
+
+# 0. Inspect current state on every replica
+GET http://0.0.0.0:8000/status
+###
+GET http://0.0.0.0:8001/status
+###
+GET http://0.0.0.0:8002/status
+
+###
+# 1. server-1 detects the leader is gone and starts an election locally
+POST http://0.0.0.0:8000/bully/election HTTP/1.1
+Content-Type: application/json
+
+{
+    "sender_id": "server-1",
+    "lamport_time": 1
+}
+
+###
+# 2. server-1 forwards the same election message to higher-priority peers (server-2 and server-3)
+POST http://0.0.0.0:8001/bully/election HTTP/1.1
+Content-Type: application/json
+
+{
+    "sender_id": "server-1",
+    "lamport_time": 2
+}
+###
+POST http://0.0.0.0:8002/bully/election HTTP/1.1
+Content-Type: application/json
+
+{
+    "sender_id": "server-1",
+    "lamport_time": 3
+}
+
+###
+# 3. Highest-id node (server-3) acknowledges the challenge by answering lower nodes
+POST http://0.0.0.0:8000/bully/answer HTTP/1.1
+Content-Type: application/json
+
+{
+    "sender_id": "server-3",
+    "lamport_time": 4
+}
+###
+POST http://0.0.0.0:8001/bully/answer HTTP/1.1
+Content-Type: application/json
+
+{
+    "sender_id": "server-3",
+    "lamport_time": 5
+}
+
+###
+# 4. server-3 declares itself leader by broadcasting coordinator announcements
+POST http://0.0.0.0:8000/bully/coordinator HTTP/1.1
+Content-Type: application/json
+
+{
+    "leader_id": "server-3",
+    "lamport_time": 6
+}
+###
+POST http://0.0.0.0:8001/bully/coordinator HTTP/1.1
+Content-Type: application/json
+
+{
+    "leader_id": "server-3",
+    "lamport_time": 6
+}
+###
+POST http://0.0.0.0:8002/bully/coordinator HTTP/1.1
+Content-Type: application/json
+
+{
+    "leader_id": "server-3",
+    "lamport_time": 6
+}
+
+###
+# 5. Verify every replica now reports server-3 as leader
+GET http://0.0.0.0:8000/status
+###
+GET http://0.0.0.0:8001/status
+###
+GET http://0.0.0.0:8002/status

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: coord-node1
+  labels:
+    app: coordination
+    instance: node1
+spec:
+  selector:
+    app: coordination
+    instance: node1
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coord-node2
+  labels:
+    app: coordination
+    instance: node2
+spec:
+  selector:
+    app: coordination
+    instance: node2
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coord-node3
+  labels:
+    app: coordination
+    instance: node3
+spec:
+  selector:
+    app: coordination
+    instance: node3
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
